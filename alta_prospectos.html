@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Alta de Prospecto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .btn {
+      margin-top: 15px;
+      padding: 10px;
+      background: #69b6b1;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn:hover {
+      background: #c4e1de;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Alta de Prospecto</h1>
+    <form id="prospectoForm" method="POST" action="/prospectos/alta/">
+      <!-- En Django incluir {% csrf_token %} -->
+      <label for="empresa">Empresa:</label>
+        <input type="text" id="empresa" name="empresa" readonly value="Empresa X">
+      
+      <label for="nombreApellido">Nombre y Apellido / Razón Social:</label>
+      <input type="text" id="nombreApellido" name="nombre_apellido" required>
+      
+      <label for="nombreFantasía">Nombre de Fantasía:</label>
+      <input type="text" id="nombreFantasía" name="nombre_fantasia">
+      
+      <label for="telefonoFijo">Teléfono Fijo:</label>
+      <input type="text" id="telefonoFijo" name="telefono_fijo">
+      
+      <label for="direccion">Dirección:</label>
+      <input type="text" id="direccion" name="direccion" required>
+      
+      <label for="mail">Correo Electrónico:</label>
+      <input type="email" id="mail" name="mail">
+      
+      <label for="telefonoMovil">Teléfono Móvil:</label>
+      <input type="text" id="telefonoMovil" name="telefono_movil">
+      
+      <label for="localidad">Localidad:</label>
+      <input type="text" id="localidad" name="localidad">
+      
+      <button type="submit" class="btn">Guardar Prospecto</button>
+      <a href="./inicial.html"><button type="button" class="btn">Volver al menú inicial</button></a>
+    </form>
+  </div>
+  <script>
+    document.getElementById("prospectoForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      alert("Prospecto guardado (simulación)!");
+    });
+  </script>
+</body>
+</html>

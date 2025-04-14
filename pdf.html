@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reporte de Presupuesto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Estilos generales */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .report-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #fff;
+      padding: 20px;
+      border: 1px solid #ccc;
+    }
+    .header, .footer {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header img {
+      max-width: 150px;
+    }
+    h1, h2 {
+      margin: 10px 0;
+    }
+    .info-section {
+      margin-bottom: 20px;
+    }
+    .info-section p {
+      margin: 5px 0;
+    }
+    .currency-select {
+      float: right;
+    }
+    /* Contenedor para que la tabla se adapte en mobile */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      min-width: 600px;
+    }
+    table th, table td {
+      border: 1px solid #333;
+      padding: 8px;
+      text-align: center;
+    }
+    .btn-export {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #69b6b1;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    /* Estilos para impresión (PDF) */
+    @media print {
+      .btn-export, .currency-select {
+        display: none;
+      }
+      body {
+        background: none;
+        margin: 0;
+      }
+      .report-container {
+        border: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="report-container" id="report">
+    <!-- Encabezado del Reporte -->
+    <div class="header">
+      <img src="./QOR.png" alt="Logo de la Empresa">
+      <h1>Reporte de Presupuesto</h1>
+      <p><strong>Empresa XYZ</strong> - Calle Falsa 123, Ciudad, País</p>
+      <p>Tel: (123) 456-7890 | Email: info@empresa.xyz</p>
+    </div>
+    
+    <!-- Información del Presupuesto -->
+    <div class="info-section">
+      <h2>Información del Presupuesto</h2>
+      <p><strong>Número de Presupuesto:</strong> PR-2025-001</p>
+      <p><strong>Fecha de Emisión:</strong> <span id="fechaEmision"></span></p>
+      <p><strong>Estado:</strong> Enviado</p>
+      <p>
+        <strong>Moneda de Cotización:</strong> 
+        <select id="monedaSelect" class="currency-select">
+          <option value="ARS">Pesos (ARS)</option>
+          <option value="USD">Dólares (USD)</option>
+          <option value="AMBOS">Pesos y Dólares</option>
+        </select>
+      </p>
+    </div>
+    
+    <!-- Datos Generales y del Prospecto -->
+    <div class="info-section">
+      <h2>Datos Generales</h2>
+      <p><strong>Vendedor:</strong> Juan Pérez</p>
+      <p><strong>Empresa:</strong> Empresa XYZ</p>
+      <p><strong>Prospecto:</strong> Cliente ABC</p>
+    </div>
+    
+    <!-- Resumen de Parámetros Globales (se muestra primero) -->
+    <div class="info-section">
+      <h2>Resumen de Parámetros Globales</h2>
+      <div class="table-responsive">
+        <table id="globalParamsTable">
+          <thead>
+            <tr>
+              <th>Sector</th>
+              <th>Descripción</th>
+              <th>Tipo de Vidrio</th>
+              <th>Instalación</th>
+              <th>Tipo de Producto</th>
+              <th>Importe Final</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Se llenará dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Resumen de Sectores -->
+    <div class="info-section">
+      <h2>Resumen de Sectores</h2>
+      <div class="table-responsive">
+        <table id="sectoresTable">
+          <thead>
+            <tr>
+              <th>Sector</th>
+              <th>Descripción</th>
+              <th>Tipo de Vidrio</th>
+              <th>Instalación</th>
+              <th>Tipo de Producto</th>
+              <th>Importe Final</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Se llenará dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- Pie de Página -->
+    <div class="footer">
+      <p>Gracias por confiar en Empresa XYZ.</p>
+      <p>Para más información, contáctenos a info@empresa.xyz</p>
+      <p>Página <span class="pageNumber"></span></p>
+    </div>
+  </div>
+  
+  <!-- Botón para simular exportar a PDF -->
+  <div style="text-align: center; margin-top: 20px;">
+    <button class="btn-export" onclick="exportToPDF()">Exportar a PDF</button>
+    <a href="./presupuestos.html"><button class="btn-export">Volver al menú inicial</button></a>
+  </div>
+  
+  <script>
+    // Asigna la fecha de emisión a la fecha actual
+    document.getElementById("fechaEmision").textContent = new Date().toLocaleDateString();
+    
+    // Datos de ejemplo para sectores (Resumen de Sectores)
+    const sectoresData = [
+      { id: 1, descripcion: "Sector A", tipoVidrio: "Control Solar", instalacion: "Interior", tipoProducto: "Seguridad", importeFinalARS: 120000 },
+      { id: 2, descripcion: "Sector B", tipoVidrio: "Seguridad", instalacion: "Exterior", tipoProducto: "Privacidad", importeFinalARS: 150000 },
+      { id: 3, descripcion: "Sector C", tipoVidrio: "Laminado", instalacion: "Interior", tipoProducto: "Seguridad", importeFinalARS: 130000 }
+    ];
+    
+    // Datos fijos para el Resumen de Parámetros Globales (ejemplo)
+    const globalParamsExample = {
+      tipoVidrio: "DVH",
+      instalacion: "Interior",
+      tipoProducto: "Seguridad",
+      descripcion: "Parámetros Globales",
+      importeFinalARS: 100000
+    };
+    
+    // Factor de conversión (ejemplo: 1 USD = 100 ARS)
+    const conversionRate = 100;
+    
+    // Función para formatear el importe final según la moneda seleccionada
+    function formatearImporte(importeARS, moneda) {
+      if (moneda === "ARS") {
+        return "$ " + importeARS;
+      } else if (moneda === "USD") {
+        return "US$ " + (importeARS / conversionRate).toFixed(2);
+      } else if (moneda === "AMBOS") {
+        return "$ " + importeARS + " / US$ " + (importeARS / conversionRate).toFixed(2);
+      }
+    }
+    
+    // Función para renderizar la tabla de parámetros globales
+    function renderGlobalParamsTable() {
+      const moneda = document.getElementById("monedaSelect").value;
+      const tbody = document.querySelector("#globalParamsTable tbody");
+      tbody.innerHTML = "";
+      
+      const importeFinal = formatearImporte(globalParamsExample.importeFinalARS, moneda);
+      
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>Global</td>
+        <td>${globalParamsExample.descripcion}</td>
+        <td>${globalParamsExample.tipoVidrio}</td>
+        <td>${globalParamsExample.instalacion}</td>
+        <td>${globalParamsExample.tipoProducto}</td>
+        <td>${importeFinal}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+    
+    // Función para renderizar la tabla de sectores
+    function renderSectoresTable() {
+      const moneda = document.getElementById("monedaSelect").value;
+      const tbody = document.querySelector("#sectoresTable tbody");
+      tbody.innerHTML = "";
+      
+      sectoresData.forEach(sector => {
+        const importeFinal = formatearImporte(sector.importeFinalARS, moneda);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${sector.id}</td>
+          <td>${sector.descripcion}</td>
+          <td>${sector.tipoVidrio}</td>
+          <td>${sector.instalacion}</td>
+          <td>${sector.tipoProducto}</td>
+          <td>${importeFinal}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    
+    // Actualiza ambas tablas cuando se cambia la moneda
+    document.getElementById("monedaSelect").addEventListener("change", function() {
+      renderGlobalParamsTable();
+      renderSectoresTable();
+    });
+    
+    // Inicializa las tablas con los datos de ejemplo
+    renderGlobalParamsTable();
+    renderSectoresTable();
+    
+    // Función para simular la exportación a PDF (usando window.print)
+    function exportToPDF() {
+      window.print();
+    }
+  </script>
+</body>
+</html>

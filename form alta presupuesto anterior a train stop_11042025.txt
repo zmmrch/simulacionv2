@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Alta de Presupuesto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* Estilos generales */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: #c4e1de;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1, h2, h3 {
+      text-align: center;
+      color: #333;
+    }
+    .form-section {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      background: #fafafa;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[readonly] {
+      background: #eee;
+    }
+    .btn {
+      background: #69b6b1;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #89c5c0;
+    }
+    .remove-btn {
+      background: #d9534f;
+      padding: 5px 10px;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+    .remove-btn:hover {
+      background: #c9302c;
+    }
+    .sector-block, .medida-block, .sector-prod-block, .global-prod-block {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      background: #fff;
+    }
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      min-width: 600px;
+    }
+    table, th, td {
+      border: 1px solid #aaa;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .checkbox-inline {
+      display: inline-block;
+      margin-left: 300px;
+    }
+    .checkbox-inline_2 {
+      display: inline-block;
+      margin-left: 350px;
+    }
+    
+    @media screen and (max-width: 768px) {
+      .checkbox-inline { margin-left: 50px; }
+      .checkbox-inline_2 { margin-left: 25px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Alta de Presupuesto</h1>
+    <form id="presupuestoForm" method="POST" action="/presupuestos/alta/">
+      
+      <!-- SECCIÓN 1: Datos del Prospecto -->
+      <div class="form-section">
+        <h2>Datos del Prospecto</h2>
+        <label for="prospectoSelect">Prospecto:</label>
+        <select id="prospectoSelect" name="id_prospecto" required>
+          <option value="1">Prospecto A</option>
+          <option value="2">Prospecto B</option>
+          <option value="3">Prospecto C</option>
+        </select>
+      </div>
+      
+      <!-- SECCIÓN 2: Datos Generales -->
+      <div class="form-section">
+        <h2>Datos Generales</h2>
+        <label for="numeroPresupuesto">Número de Presupuesto:</label>
+        <input type="text" id="numeroPresupuesto" name="numero_presupuesto" readonly placeholder="Autogenerado">
+        
+        <label for="fechaPresupuesto">Fecha de Presupuesto:</label>
+        <input type="date" id="fechaPresupuesto" name="fecha_presupuesto" readonly>
+        
+        <label for="vendedor">Vendedor:</label>
+        <input type="text" id="vendedor" name="vendedor" readonly value="JC (Autocompletado)">
+        
+        <label for="empresa">Empresa:</label>
+        <input type="text" id="empresa" name="empresa" readonly value="Empresa X">
+        
+        <!-- Checkbox para determinar si la obra es interior (activa Costos Adicionales) -->
+        <div class="checkbox-inline_2">
+          <input type="checkbox" id="cabaGba" name="caba_gba">
+          <label for="cabaGba">CABA/GBA</label>
+        </div>
+        <div class="checkbox-inline">
+          <input type="checkbox" id="obraInterior" name="obra_interior">
+          <label for="obraInterior">Interior del país</label>
+        </div>
+        
+        <label for="fechaEnvio">Fecha de Envío:</label>
+        <input type="date" id="fechaEnvio" name="fecha_envio">
+        
+        <label for="estadoPresupuesto">Estado:</label>
+        <select id="estadoPresupuesto" name="estado" required>
+          <option value="En curso">En curso</option>
+          <option value="Enviado">Enviado</option>
+          <option value="Cancelado">Cancelado</option>
+          <option value="Finalizado">Finalizado</option>
+          <option value="Modificado">Modificado</option>
+        </select>
+        
+        <!-- Checkbox para usar atributos globales -->
+        <div class="checkbox-inline">
+          <input type="checkbox" id="usaAtributosGlobales" name="usa_atributos_globales">
+          <label for="usaAtributosGlobales">Usar atributos globales</label>
+        </div>
+      </div>
+      
+      <!-- SECCIÓN: Atributos Globales -->
+      <div class="form-section" id="globalAttributesSection" style="display: none;">
+        <h2>Atributos Globales</h2>
+        <label for="tipoVidrioGlobal">Tipo de Vidrio:</label>
+        <select id="tipoVidrioGlobal" name="tipo_vidrio_global">
+          <option value="1">DVH</option>
+          <option value="2">Crudo</option>
+          <option value="3">Laminado</option>
+        </select>
+        
+        <label for="instalacionGlobal">Instalación:</label>
+        <select id="instalacionGlobal" name="instalacion_global">
+          <option value="1">Interior</option>
+          <option value="2">Exterior</option>
+        </select>
+        
+        <label for="tipoProductoGlobal">Tipo de Producto:</label>
+        <select id="tipoProductoGlobal" name="tipo_producto_global">
+          <option value="1">Seguridad</option>
+          <option value="2">Privacidad</option>
+        </select>
+
+        <!-- Sección de Productos Globales -->
+        <h3>Productos Globales</h3>
+        <div id="globalProductsContainer"></div>
+        <button type="button" class="btn" id="addGlobalProductBtn">Agregar Producto Global</button>
+        
+        <label for="andamiosGlobal">Andamios:</label>
+        <input type="number" id="andamiosGlobal" name="andamios_global">
+        
+        <label for="escalerasGlobal">Escaleras:</label>
+        <input type="number" id="escalerasGlobal" name="escaleras_global">
+        
+        <label for="ayudantesGlobal">Ayudantes:</label>
+        <input type="number" id="ayudantesGlobal" name="ayudantes_global">
+        
+        <label for="vidrioRepartidoGlobal">Vidrio Repartido:</label>
+        <select id="vidrioRepartidoGlobal" name="vidrio_repartido_global">
+          <option value="false">No</option>
+          <option value="true">Sí</option>
+        </select>
+        
+        <!-- Checkboxes para Costos Adicionales Globales, siempre visibles debajo de "Vidrio Repartido" -->
+        <label for="techoGlobal">Techos:</label>
+        <input type="checkbox" id="techoGlobal" name="techo_global">
+        
+        <label for="alturaGlobal">Altura:</label>
+        <input type="checkbox" id="alturaGlobal" name="altura_global">
+        
+        <label for="pergolaGlobal">Pérgola:</label>
+        <input type="checkbox" id="pergolaGlobal" name="pergola_global">
+        
+        <label for="silletaGlobal">Silleta:</label>
+        <input type="checkbox" id="silletaGlobal" name="silleta_global">
+        
+        
+      </div>
+      
+      <!-- SECCIÓN 4: Sectores -->
+      <div class="form-section">
+        <h2>Sectores</h2>
+        <div id="sectoresContainer">
+          <!-- Se agregarán dinámicamente -->
+        </div>
+        <button type="button" class="btn" id="addSectorBtn">Agregar Sector</button>
+      </div>
+      
+      <!-- SECCIÓN 3: Costos Adicionales Globales (parte de datos generales) -->
+      <div class="form-section" id="costosAdicionalesSection" style="display: none;">
+        <h2>Costos Adicionales Globales</h2>
+        <label for="diasDistancia">Días para +200 km:</label>
+        <input type="number" id="diasDistancia" name="dias_distancia" step="1">
+      </div>
+      
+      <!-- SECCIÓN 5: Resumen y Totales -->
+      <div class="form-section">
+        <h2>Resumen y Totales</h2>
+        
+        <label for="m2Totales">Área Total (m²):</label>
+        <input type="number" id="m2Totales" name="m2_totales" readonly>
+        
+        <label for="metrosLineales">Metros Lineales:</label>
+        <input type="number" id="metrosLineales" name="metros_lineales" readonly>
+        
+        <button type="button" class="btn" id="calcularBtn">Calcular</button>
+        
+        <!-- Tabla unificada para Sectores -->
+        <div class="table-responsive">
+          <h3>Resumen de Detalle de Cotización - Sectores</h3>
+          <table id="resumenTableSector">
+            <thead>
+              <tr>
+                <th>Sector</th>
+                <th>Descripción</th>
+                <th>Tipo de Vidrio</th>
+                <th>Instalación</th>
+                <th>Tipo de Producto</th>
+                <th>Andamios</th>
+                <th>Escaleras</th>
+                <th>Ayudantes</th>
+                <th>Vidrio Repartido</th>
+                <th>Medidas</th>
+                <th>Importe Final (ARS)</th>
+                <th>Importe Final (USD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Se llenará dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Tabla unificada para Global -->
+        <div class="table-responsive">
+          <h3>Resumen de Detalle de Cotización - Global</h3>
+          <table id="resumenTableGlobal">
+            <thead>
+              <tr>
+                <th>Sector</th>
+                <th>Descripción</th>
+                <th>Tipo de Vidrio</th>
+                <th>Instalación</th>
+                <th>Tipo de Producto</th>
+                <th>Andamios</th>
+                <th>Escaleras</th>
+                <th>Ayudantes</th>
+                <th>Vidrio Repartido</th>
+                <th>Medidas</th>
+                <th>Importe Final (ARS)</th>
+                <th>Importe Final (USD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Se llenará dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- SECCIÓN 6: Información Adicional -->
+      <div class="form-section">
+        <h2>Información Adicional</h2>
+        <label for="informacionAdicional">Comentarios:</label>
+        <textarea id="informacionAdicional" name="informacion_adicional" rows="3"></textarea>
+      </div>
+      
+      <button type="submit" class="btn">Guardar Presupuesto</button>
+      <a href="./presupuestos.html"><button type="button" class="btn">Volver al Menú Anterior</button></a>
+      
+      <input type="hidden" id="version" name="version" value="1">
+      <input type="hidden" id="original_presupuesto" name="original_presupuesto" value="">
+    </form>
+  </div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Asignar fecha actual
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById("fechaPresupuesto").value = today;
+      
+      // Elementos clave
+      const obraInteriorCheckbox = document.getElementById("obraInterior");
+      const costosAdicionalesSection = document.getElementById("costosAdicionalesSection");
+      const usaAtributosGlobalesCheckbox = document.getElementById("usaAtributosGlobales");
+      const globalAttributesSection = document.getElementById("globalAttributesSection");
+      const sectoresContainer = document.getElementById("sectoresContainer");
+      const addSectorBtn = document.getElementById("addSectorBtn");
+      let sectorCount = 0;
+      
+      // Mostrar/ocultar Costos Adicionales Globales según "obra_interior"
+      obraInteriorCheckbox.addEventListener("change", function() {
+        const displayVal = this.checked ? "block" : "none";
+        costosAdicionalesSection.style.display = displayVal;
+      });
+      
+      // Mostrar/ocultar Atributos Globales
+      usaAtributosGlobalesCheckbox.addEventListener("change", function() {
+        globalAttributesSection.style.display = this.checked ? "block" : "none";
+        updateSectorAttributesVisibility();
+      });
+      
+      // Actualizar visibilidad de atributos locales en cada sector (se ocultan si se usan atributos globales)
+      function updateSectorAttributesVisibility() {
+        const useGlobal = usaAtributosGlobalesCheckbox.checked;
+        const sectorBlocks = document.querySelectorAll(".sector-block");
+        sectorBlocks.forEach(sector => {
+          const globalAttrFields = sector.querySelectorAll(".local-global-attr");
+          const productContainer = sector.querySelector(".productos-container");
+          const addProductoBtn = sector.querySelector(".add-producto-btn");
+          globalAttrFields.forEach(field => {
+            field.style.display = useGlobal ? "none" : "block";
+          });
+          if(productContainer) productContainer.style.display = useGlobal ? "none" : "block";
+          if(addProductoBtn) addProductoBtn.style.display = useGlobal ? "none" : "inline-block";
+        });
+      }
+      
+      // Función para crear un bloque de sector
+      function createSectorBlock() {
+        const currentSectorIndex = sectorCount;
+        const sectorDiv = document.createElement("div");
+        sectorDiv.classList.add("sector-block");
+        sectorDiv.dataset.sectorIndex = currentSectorIndex;
+        
+        const header = document.createElement("h3");
+        header.textContent = "Sector " + (currentSectorIndex + 1);
+        sectorDiv.appendChild(header);
+        
+        // Botón para eliminar sector
+        const removeSectorBtn = document.createElement("button");
+        removeSectorBtn.type = "button";
+        removeSectorBtn.textContent = "Eliminar Sector";
+        removeSectorBtn.classList.add("remove-btn");
+        removeSectorBtn.addEventListener("click", function() {
+          sectorDiv.remove();
+          updateResumenTableSector();
+          calculateTotals();
+        });
+        sectorDiv.appendChild(removeSectorBtn);
+        
+        // Descripción del sector
+        const labelDesc = document.createElement("label");
+        labelDesc.textContent = "Descripción del Sector:";
+        sectorDiv.appendChild(labelDesc);
+        const inputDesc = document.createElement("input");
+        inputDesc.type = "text";
+        inputDesc.name = `sector_${currentSectorIndex}_descripcion`;
+        inputDesc.required = true;
+        sectorDiv.appendChild(inputDesc);
+        
+        // Atributos locales (con clase "local-global-attr")
+        // Tipo de Vidrio
+        const labelVidrio = document.createElement("label");
+        labelVidrio.textContent = "Tipo de Vidrio:";
+        labelVidrio.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelVidrio);
+        const selectVidrio = document.createElement("select");
+        selectVidrio.name = `sector_${currentSectorIndex}_tipo_vidrio`;
+        selectVidrio.classList.add("local-global-attr");
+        const tiposVidrioSim = [
+          { id: 1, descripcion: "DVH" },
+          { id: 2, descripcion: "Crudo" },
+          { id: 3, descripcion: "Laminado" }
+        ];
+        tiposVidrioSim.forEach(tv => {
+          const option = document.createElement("option");
+          option.value = tv.id;
+          option.textContent = tv.descripcion;
+          selectVidrio.appendChild(option);
+        });
+        sectorDiv.appendChild(selectVidrio);
+        
+        // Instalación
+        const labelInstalacion = document.createElement("label");
+        labelInstalacion.textContent = "Instalación:";
+        labelInstalacion.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelInstalacion);
+        const selectInstalacion = document.createElement("select");
+        selectInstalacion.name = `sector_${currentSectorIndex}_instalacion`;
+        selectInstalacion.classList.add("local-global-attr");
+        const instalacionesSim = [
+          { id: 1, descripcion: "Interior" },
+          { id: 2, descripcion: "Exterior" }
+        ];
+        instalacionesSim.forEach(i => {
+          const option = document.createElement("option");
+          option.value = i.id;
+          option.textContent = i.descripcion;
+          selectInstalacion.appendChild(option);
+        });
+        sectorDiv.appendChild(selectInstalacion);
+        
+        // Tipo de Producto
+        const labelTipoProd = document.createElement("label");
+        labelTipoProd.textContent = "Tipo de Producto:";
+        labelTipoProd.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelTipoProd);
+        const selectTipoProd = document.createElement("select");
+        selectTipoProd.name = `sector_${currentSectorIndex}_tipo_producto`;
+        selectTipoProd.classList.add("local-global-attr");
+        const tiposProdSim = [
+          { id: 1, descripcion: "Seguridad" },
+          { id: 2, descripcion: "Privacidad" }
+        ];
+        tiposProdSim.forEach(tp => {  
+          const option = document.createElement("option");
+          option.value = tp.id;
+          option.textContent = tp.descripcion;
+          selectTipoProd.appendChild(option);
+        });
+        sectorDiv.appendChild(selectTipoProd);
+
+        // Contenedor de Productos (local)
+        const productosContainer = document.createElement("div");
+        productosContainer.classList.add("productos-container");
+        sectorDiv.appendChild(productosContainer);
+        const addProductoBtn = document.createElement("button");
+        addProductoBtn.type = "button";
+        addProductoBtn.textContent = "Agregar Producto al Sector";
+        addProductoBtn.classList.add("btn", "add-producto-btn");
+        addProductoBtn.addEventListener("click", function() {
+          productosContainer.appendChild(createSectorProductoRow(currentSectorIndex));
+        });
+        sectorDiv.appendChild(addProductoBtn);
+        
+        // Andamios
+        const labelAndamios = document.createElement("label");
+        labelAndamios.textContent = "Andamios:";
+        labelAndamios.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelAndamios);
+        const inputAndamios = document.createElement("input");
+        inputAndamios.type = "number";
+        inputAndamios.name = `sector_${currentSectorIndex}_andamios`;
+        inputAndamios.classList.add("local-global-attr");
+        sectorDiv.appendChild(inputAndamios);
+        
+        // Escaleras
+        const labelEscaleras = document.createElement("label");
+        labelEscaleras.textContent = "Escaleras:";
+        labelEscaleras.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelEscaleras);
+        const inputEscaleras = document.createElement("input");
+        inputEscaleras.type = "number";
+        inputEscaleras.name = `sector_${currentSectorIndex}_escaleras`;
+        inputEscaleras.classList.add("local-global-attr");
+        sectorDiv.appendChild(inputEscaleras);
+        
+        // Ayudantes
+        const labelAyudantes = document.createElement("label");
+        labelAyudantes.textContent = "Ayudantes:";
+        labelAyudantes.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelAyudantes);
+        const inputAyudantes = document.createElement("input");
+        inputAyudantes.type = "number";
+        inputAyudantes.name = `sector_${currentSectorIndex}_ayudantes`;
+        inputAyudantes.classList.add("local-global-attr");
+        sectorDiv.appendChild(inputAyudantes);
+        
+        // Vidrio Repartido
+        const labelVidrioRep = document.createElement("label");
+        labelVidrioRep.textContent = "Vidrio Repartido:";
+        labelVidrioRep.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelVidrioRep);
+        const selectVidrioRep = document.createElement("select");
+        selectVidrioRep.name = `sector_${currentSectorIndex}_vidrio_repartido`;
+        selectVidrioRep.classList.add("local-global-attr");
+        const optionVidrioSi = document.createElement("option");
+        optionVidrioSi.value = "true";
+        optionVidrioSi.textContent = "Sí";
+        const optionVidrioNo = document.createElement("option");
+        optionVidrioNo.value = "false";
+        optionVidrioNo.textContent = "No";
+        selectVidrioRep.appendChild(optionVidrioSi);
+        selectVidrioRep.appendChild(optionVidrioNo);
+        sectorDiv.appendChild(selectVidrioRep);
+        
+        // Checkboxes de Costos Adicionales a nivel Sector, ubicados debajo de "Vidrio Repartido"
+        const labelTechoSector = document.createElement("label");
+        labelTechoSector.textContent = "Techos:";
+        labelTechoSector.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelTechoSector);
+        const checkboxTechoSector = document.createElement("input");
+        checkboxTechoSector.type = "checkbox";
+        checkboxTechoSector.name = `sector_${currentSectorIndex}_techo`;
+        checkboxTechoSector.classList.add("local-global-attr");
+        sectorDiv.appendChild(checkboxTechoSector);
+        
+        const labelAlturaSector = document.createElement("label");
+        labelAlturaSector.textContent = "Altura:";
+        labelAlturaSector.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelAlturaSector);
+        const checkboxAlturaSector = document.createElement("input");
+        checkboxAlturaSector.type = "checkbox";
+        checkboxAlturaSector.name = `sector_${currentSectorIndex}_altura`;
+        checkboxAlturaSector.classList.add("local-global-attr");
+        sectorDiv.appendChild(checkboxAlturaSector);
+        
+        const labelPergolaSector = document.createElement("label");
+        labelPergolaSector.textContent = "Pérgola:";
+        labelPergolaSector.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelPergolaSector);
+        const checkboxPergolaSector = document.createElement("input");
+        checkboxPergolaSector.type = "checkbox";
+        checkboxPergolaSector.name = `sector_${currentSectorIndex}_pergola`;
+        checkboxPergolaSector.classList.add("local-global-attr");
+        sectorDiv.appendChild(checkboxPergolaSector);
+        
+        const labelSilletaSector = document.createElement("label");
+        labelSilletaSector.textContent = "Silleta:";
+        labelSilletaSector.classList.add("local-global-attr");
+        sectorDiv.appendChild(labelSilletaSector);
+        const checkboxSilletaSector = document.createElement("input");
+        checkboxSilletaSector.type = "checkbox";
+        checkboxSilletaSector.name = `sector_${currentSectorIndex}_silleta`;
+        checkboxSilletaSector.classList.add("local-global-attr");
+        sectorDiv.appendChild(checkboxSilletaSector);
+        
+        // Contenedor de Medidas
+        const medidasContainer = document.createElement("div");
+        medidasContainer.classList.add("medidas-container");
+        sectorDiv.appendChild(medidasContainer);
+        const addMedidaBtn = document.createElement("button");
+        addMedidaBtn.type = "button";
+        addMedidaBtn.textContent = "Agregar Medida";
+        addMedidaBtn.classList.add("btn", "add-medida-btn");
+        addMedidaBtn.addEventListener("click", function() {
+          medidasContainer.appendChild(createMedidaRow(currentSectorIndex));
+        });
+        sectorDiv.appendChild(addMedidaBtn);
+        
+        
+        
+        updateResumenTableSector();
+        updateSectorAttributesVisibility();
+        sectorCount++;
+        return sectorDiv;
+      }
+      
+      // Crear bloque de Medida
+      function createMedidaRow(sectorIndex) {
+        const div = document.createElement("div");
+        div.classList.add("medida-block");
+        
+        const labelCant = document.createElement("label");
+        labelCant.textContent = "Cantidad:";
+        div.appendChild(labelCant);
+        const inputCant = document.createElement("input");
+        inputCant.type = "number";
+        inputCant.name = `sector_${sectorIndex}_medida_cantidad[]`;
+        inputCant.required = true;
+        div.appendChild(inputCant);
+        
+        const labelAncho = document.createElement("label");
+        labelAncho.textContent = "Ancho (m):";
+        div.appendChild(labelAncho);
+        const inputAncho = document.createElement("input");
+        inputAncho.type = "number";
+        inputAncho.step = "0.01";
+        inputAncho.name = `sector_${sectorIndex}_medida_ancho[]`;
+        inputAncho.required = true;
+        div.appendChild(inputAncho);
+        
+        const labelAlto = document.createElement("label");
+        labelAlto.textContent = "Alto (m):";
+        div.appendChild(labelAlto);
+        const inputAlto = document.createElement("input");
+        inputAlto.type = "number";
+        inputAlto.step = "0.01";
+        inputAlto.name = `sector_${sectorIndex}_medida_alto[]`;
+        inputAlto.required = true;
+        div.appendChild(inputAlto);
+        
+        const labelDespolarizado = document.createElement("label");
+        labelDespolarizado.textContent = "Despolarizado:";
+        div.appendChild(labelDespolarizado);
+        const selectDespolarizado = document.createElement("select");
+        selectDespolarizado.name = `sector_${sectorIndex}_medida_despolarizado[]`;
+        const optionSi = document.createElement("option");
+        optionSi.value = "true";
+        optionSi.textContent = "Sí";
+        const optionNo = document.createElement("option");
+        optionNo.value = "false";
+        optionNo.textContent = "No";
+        selectDespolarizado.appendChild(optionSi);
+        selectDespolarizado.appendChild(optionNo);
+        div.appendChild(selectDespolarizado);
+        
+        const removeMedidaBtn = document.createElement("button");
+        removeMedidaBtn.type = "button";
+        removeMedidaBtn.textContent = "Eliminar Medida";
+        removeMedidaBtn.classList.add("remove-btn");
+        removeMedidaBtn.addEventListener("click", function() {
+          div.remove();
+          calculateTotals();
+          updateResumenTableSector();
+        });
+        div.appendChild(removeMedidaBtn);
+        return div;
+      }
+      
+      // Crear bloque de Producto (local)
+      function createSectorProductoRow(sectorIndex) {
+        const div = document.createElement("div");
+        div.classList.add("sector-prod-block");
+        
+        const labelProd = document.createElement("label");
+        labelProd.textContent = "Producto:";
+        div.appendChild(labelProd);
+        const selectProd = document.createElement("select");
+        selectProd.name = `sector_${sectorIndex}_producto[]`;
+        const productosSim = [
+          { id: 1, tipo_lamina: "Producto 1" },
+          { id: 2, tipo_lamina: "Producto 2" },
+          { id: 3, tipo_lamina: "Producto 3" },
+          { id: 4, tipo_lamina: "Producto 4" }
+        ];
+        productosSim.forEach(prod => {
+          const option = document.createElement("option");
+          option.value = prod.id;
+          option.textContent = prod.tipo_lamina;
+          selectProd.appendChild(option);
+        });
+        div.appendChild(selectProd);
+        
+        const removeProdBtn = document.createElement("button");
+        removeProdBtn.type = "button";
+        removeProdBtn.textContent = "Eliminar Producto";
+        removeProdBtn.classList.add("remove-btn");
+        removeProdBtn.addEventListener("click", function() {
+          div.remove();
+          calculateTotals();
+          updateResumenTableSector();
+        });
+        div.appendChild(removeProdBtn);
+        return div;
+      }
+      
+      // Global Products (en Atributos Globales)
+      const globalProductsContainer = document.getElementById("globalProductsContainer");
+      const addGlobalProductBtn = document.getElementById("addGlobalProductBtn");
+      function createGlobalProductRow() {
+        const div = document.createElement("div");
+        div.classList.add("global-prod-block");
+        const labelProd = document.createElement("label");
+        labelProd.textContent = "Producto Global:";
+        div.appendChild(labelProd);
+        const selectProd = document.createElement("select");
+        selectProd.name = `global_producto[]`;
+        const productosSim = [
+          { id: 1, tipo_lamina: "Producto 1" },
+          { id: 2, tipo_lamina: "Producto 2" },
+          { id: 3, tipo_lamina: "Producto 3" },
+          { id: 4, tipo_lamina: "Producto 4" }
+        ];
+        productosSim.forEach(prod => {
+          const option = document.createElement("option");
+          option.value = prod.id;
+          option.textContent = prod.tipo_lamina;
+          selectProd.appendChild(option);
+        });
+        div.appendChild(selectProd);
+        
+        const removeProdBtn = document.createElement("button");
+        removeProdBtn.type = "button";
+        removeProdBtn.textContent = "Eliminar Producto Global";
+        removeProdBtn.classList.add("remove-btn");
+        removeProdBtn.addEventListener("click", function() {
+          div.remove();
+        });
+        div.appendChild(removeProdBtn);
+        return div;
+      }
+      addGlobalProductBtn.addEventListener("click", function() {
+        globalProductsContainer.appendChild(createGlobalProductRow());
+      });
+      
+      // Función simulada para calcular totales
+      function calculateTotals() {
+        document.getElementById("m2Totales").value = 150;
+        document.getElementById("metrosLineales").value = 80;
+      }
+      
+      // Actualizar tabla resumen para Sectores
+      function updateResumenTableSector() {
+        const tbody = document.querySelector("#resumenTableSector tbody");
+        tbody.innerHTML = "";
+        const sectors = document.querySelectorAll(".sector-block");
+        sectors.forEach(sector => {
+          const sectorIndex = sector.dataset.sectorIndex;
+          const descInput = sector.querySelector(`input[name="sector_${sectorIndex}_descripcion"]`);
+          const desc = descInput ? descInput.value : "";
+          
+          // Verificar si se usan atributos globales
+          const useGlobal = document.getElementById("usaAtributosGlobales").checked;
+          let tipoVidrio = "", instalacion = "", tipoProducto = "", andamios = "", escaleras = "", ayudantes = "", vidrioRepartido = "";
+          
+          if(useGlobal) {
+            tipoVidrio = document.getElementById("tipoVidrioGlobal").selectedOptions[0].textContent;
+            instalacion = document.getElementById("instalacionGlobal").selectedOptions[0].textContent;
+            tipoProducto = document.getElementById("tipoProductoGlobal").selectedOptions[0].textContent;
+            andamios = document.getElementById("andamiosGlobal").value;
+            escaleras = document.getElementById("escalerasGlobal").value;
+            ayudantes = document.getElementById("ayudantesGlobal").value;
+            vidrioRepartido = document.getElementById("vidrioRepartidoGlobal").selectedOptions[0].textContent;
+          } else {
+            const localTipoVidrio = sector.querySelector(`select[name="sector_${sectorIndex}_tipo_vidrio"]`);
+            const localInstalacion = sector.querySelector(`select[name="sector_${sectorIndex}_instalacion"]`);
+            const localTipoProducto = sector.querySelector(`select[name="sector_${sectorIndex}_tipo_producto"]`);
+            const localAndamios = sector.querySelector(`input[name="sector_${sectorIndex}_andamios"]`);
+            const localEscaleras = sector.querySelector(`input[name="sector_${sectorIndex}_escaleras"]`);
+            const localAyudantes = sector.querySelector(`input[name="sector_${sectorIndex}_ayudantes"]`);
+            const localVidrioRep = sector.querySelector(`select[name="sector_${sectorIndex}_vidrio_repartido"]`);
+            tipoVidrio = localTipoVidrio ? localTipoVidrio.selectedOptions[0].textContent : "";
+            instalacion = localInstalacion ? localInstalacion.selectedOptions[0].textContent : "";
+            tipoProducto = localTipoProducto ? localTipoProducto.selectedOptions[0].textContent : "";
+            andamios = localAndamios ? localAndamios.value : "";
+            escaleras = localEscaleras ? localEscaleras.value : "";
+            ayudantes = localAyudantes ? localAyudantes.value : "";
+            vidrioRepartido = localVidrioRep ? localVidrioRep.selectedOptions[0].textContent : "";
+          }
+          
+          // Recopilar medidas de este sector
+          let measures = "";
+          const measureBlocks = sector.querySelectorAll(".medida-block");
+          measureBlocks.forEach(mb => {
+            const cantidad = mb.querySelector(`input[name="sector_${sectorIndex}_medida_cantidad[]"]`)?.value || "";
+            const ancho = mb.querySelector(`input[name="sector_${sectorIndex}_medida_ancho[]"]`)?.value || "";
+            const alto = mb.querySelector(`input[name="sector_${sectorIndex}_medida_alto[]"]`)?.value || "";
+            const despolarizado = mb.querySelector(`select[name="sector_${sectorIndex}_medida_despolarizado[]"]`)?.value === "true" ? "Sí" : "No";
+            measures += `${cantidad} x ${ancho} x ${alto} x ${despolarizado}<br>`;
+          });
+          
+          // Recopilar productos locales
+          let products = "";
+          const prodBlocks = sector.querySelectorAll(".sector-prod-block");
+          prodBlocks.forEach(pb => {
+            const selectProd = pb.querySelector(`select[name="sector_${sectorIndex}_producto[]"]`);
+            const prodName = selectProd ? selectProd.options[selectProd.selectedIndex].textContent : "";
+            if(prodName) { products += prodName + ", "; }
+          });
+          products = products.slice(0, -2);
+          
+          // Cálculo simulado de importes
+          const numProducts = prodBlocks.length;
+          const finalARS = 5000 * numProducts;
+          const finalUSD = finalARS / 100;
+          
+          const row = document.createElement("tr");
+          const cells = [
+            parseInt(sectorIndex, 10) + 1,
+            desc,
+            tipoVidrio,
+            instalacion,
+            tipoProducto,
+            andamios,
+            escaleras,
+            ayudantes,
+            vidrioRepartido,
+            measures.trim(),
+            finalARS.toFixed(2),
+            finalUSD.toFixed(2)
+          ];
+          cells.forEach(cellData => {
+            const cell = document.createElement("td");
+            cell.textContent = cellData;
+            row.appendChild(cell);
+          });
+          tbody.appendChild(row);
+        });
+      }
+      
+      // Actualizar tabla resumen para Global
+      function updateResumenTableGlobal() {
+        const tbody = document.querySelector("#resumenTableGlobal tbody");
+        tbody.innerHTML = "";
+        
+        const tipoVidrio = document.getElementById("tipoVidrioGlobal").selectedOptions[0].textContent;
+        const instalacion = document.getElementById("instalacionGlobal").selectedOptions[0].textContent;
+        const tipoProducto = document.getElementById("tipoProductoGlobal").selectedOptions[0].textContent;
+        const andamios = document.getElementById("andamiosGlobal").value || "";
+        const escaleras = document.getElementById("escalerasGlobal").value || "";
+        const ayudantes = document.getElementById("ayudantesGlobal").value || "";
+        const vidrioRepartido = document.getElementById("vidrioRepartidoGlobal").selectedOptions[0].textContent;
+        
+        const desc = "Atributos Globales";
+        const measures = "N/A";
+        
+        let products = "";
+        const globalProdBlocks = globalProductsContainer.querySelectorAll(".global-prod-block select");
+        globalProdBlocks.forEach(select => {
+          const prodName = select.options[select.selectedIndex].textContent;
+          if(prodName) { products += prodName + ", "; }
+        });
+        products = products.slice(0, -2);
+        
+        const numProducts = globalProdBlocks.length;
+        const finalARS = 10000 * (numProducts || 1);
+        const finalUSD = finalARS / 100;
+        
+        const row = document.createElement("tr");
+        const cells = [
+          "Global",
+          desc,
+          tipoVidrio,
+          instalacion,
+          tipoProducto,
+          andamios,
+          escaleras,
+          ayudantes,
+          vidrioRepartido,
+          measures,
+          finalARS.toFixed(2),
+          finalUSD.toFixed(2)
+        ];
+        cells.forEach(cellData => {
+          const cell = document.createElement("td");
+          cell.textContent = cellData;
+          row.appendChild(cell);
+        });
+        tbody.appendChild(row);
+      }
+      
+      addSectorBtn.addEventListener("click", function() {
+        sectoresContainer.appendChild(createSectorBlock());
+      });
+      
+      document.getElementById("calcularBtn").addEventListener("click", function() {
+        calculateTotals();
+        updateResumenTableSector();
+        updateResumenTableGlobal();
+      });
+      
+      document.getElementById("presupuestoForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        alert("Presupuesto guardado (simulación)!");
+      });
+    });
+  </script>
+</body>
+</html>
