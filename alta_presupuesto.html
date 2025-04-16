@@ -921,12 +921,13 @@
         const div = document.createElement("div");
         div.classList.add("dynamic-container");
         div.innerHTML = `
-          <label>Ancho (m):</label>
-          <input type="number" step="0.01" name="medida_ancho[]" placeholder="Ancho">
-          <label>Alto (m):</label>
-          <input type="number" step="0.01" name="medida_alto[]" placeholder="Alto">
           <label>Cantidad:</label>
           <input type="number" name="medida_cantidad[]" placeholder="Cantidad">
+          <label>Alto (cm):</label>
+          <input type="number" step="0.01" name="medida_alto[]" placeholder="Alto">
+          <label>Ancho (cm):</label>
+          <input type="number" step="0.01" name="medida_ancho[]" placeholder="Ancho">
+          
           <label>Despolarizado:</label>
           <select name="medida_despolarizado[]">
             <option value="true">Sí</option>
@@ -941,9 +942,9 @@
         let tableHtml = `<table class="measure-table">
           <thead>
             <tr>
-              <th>Ancho (m)</th>
-              <th>Alto (m)</th>
               <th>Cantidad</th>
+              <th>Alto (cm)</th>
+              <th>Ancho (cm)</th>
               <th>Despolarizado</th>
             </tr>
           </thead>
@@ -1154,12 +1155,13 @@
         const div = document.createElement("div");
         div.classList.add("dynamic-container");
         div.innerHTML = `
-          <label>Ancho (m):</label>
-          <input type="number" step="0.01" name="sector_medida_ancho[]" placeholder="Ancho">
-          <label>Alto (m):</label>
-          <input type="number" step="0.01" name="sector_medida_alto[]" placeholder="Alto">
           <label>Cantidad:</label>
           <input type="number" name="sector_medida_cantidad[]" placeholder="Cantidad">
+          <label>Alto (cm):</label>
+          <input type="number" step="0.01" name="sector_medida_alto[]" placeholder="Alto">
+          <label>Ancho (cm):</label>
+          <input type="number" step="0.01" name="sector_medida_ancho[]" placeholder="Ancho">
+                    
           <label>Despolarizado:</label>
           <select name="sector_medida_despolarizado[]">
             <option value="true">Sí</option>
@@ -1174,9 +1176,9 @@
         let tableHtml = `<table class="measure-table">
           <thead>
             <tr>
-              <th>Ancho (m)</th>
-              <th>Alto (m)</th>
               <th>Cantidad</th>
+              <th>Alto (cm)</th>
+              <th>Ancho (cm)</th>
               <th>Despolarizado</th>
             </tr>
           </thead>
