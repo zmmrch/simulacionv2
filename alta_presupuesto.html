@@ -390,7 +390,7 @@
           <li>Resumen y Totales</li>
           <li>Reporte y Envío</li>
         </ul>
-        <form id="wizardGeneral">
+        <form id="wizardGeneral" enctype="multipart/form-data">
           <!-- Paso 1: Datos Generales y del Prospecto -->
           <div class="wizard-step active" id="genStep1">
             <h3>Datos Generales y del Prospecto</h3>
@@ -493,6 +493,14 @@
               <label for="genDias200km">Días a más de 200km:</label>
               <input type="number" id="genDias200km" name="dias200km" placeholder="Ingrese días">
             </div>
+            <!-- NUEVO: Observaciones -->
+            <label for="genObservaciones">Observaciones:</label>
+            <textarea id="genObservaciones" name="observaciones" rows="6" style="height:120px; width: 100%;" placeholder="Escribe aquí tus observaciones…"></textarea>
+
+            <!-- NUEVO: Adjuntar archivos -->
+            <label for="genAdjuntos">Adjuntar archivos:</label>
+            <input type="file" id="genAdjuntos" name="adjuntos[]" multiple>
+
           </div>
           
           <!-- Paso 4: Resumen y Totales (Presupuesto General con Información Completa) -->
@@ -674,6 +682,13 @@
               <label for="secDias200km">Días a más de 200km:</label>
               <input type="number" id="secDias200km" name="dias200km" placeholder="Ingrese días">
             </div>
+            <!-- NUEVO: Observaciones -->
+            <label for="secObservaciones">Observaciones:</label>
+            <textarea id="secObservaciones" name="observaciones" rows="6" style="height:120px; width: 100%;" placeholder="Escribe aquí tus observaciones…"></textarea>
+
+            <!-- NUEVO: Adjuntar archivos -->
+            <label for="secAdjuntos">Adjuntar archivos:</label>
+            <input type="file" id="secAdjuntos" name="adjuntos[]" multiple>
           </div>
           
           <!-- Paso 4: Resumen y Totales (Presupuesto por Sector - Información Completa) -->
@@ -916,27 +931,98 @@
         container.appendChild(div);
       }
       
-      function addMedidaGeneral() {
-        const container = document.getElementById("medidasContainerGeneral");
+      // --- FORMULARIO GENERAL ---
+function addMedidaGeneral() {
+  const container = document.getElementById("medidasContainerGeneral");
+  const div = document.createElement("div");
+  div.classList.add("dynamic-container");
+  div.innerHTML = `
+    <label>Ancho (m):</label>
+    <input type="number" step="0.01" name="medida_ancho[]" placeholder="Ancho" class="ancho-input" required>
+    <label>Alto (m):</label>
+    <input type="number" step="0.01" name="medida_alto[]" placeholder="Alto" required>
+    <label>Cantidad:</label>
+    <input type="number" name="medida_cantidad[]" placeholder="Cantidad" required>
+    <label>Despolarizado:</label>
+    <select name="medida_despolarizado[]">
+      <option value="true">Sí</option>
+      <option value="false">No</option>
+    </select>
+
+    <!-- NUEVO: Requiere Unión (oculto por defecto) -->
+    <label>Requiere Unión:</label>
+    <select name="medida_union[]" class="union-select" style="display:none;">
+      <option value="">Seleccione</option>
+      <option value="izquierda">Izquierda</option>
+      <option value="derecha">Derecha</option>
+      <option value="arriba">Arriba</option>
+      <option value="abajo">Abajo</option>
+      <option value="medio">Medio</option>
+    </select>
+
+    <button type="button" class="small-btn" onclick="this.parentElement.remove()">Eliminar Medida</button>
+  `;
+  container.appendChild(div);
+
+  // Lógica de show/hide para el select de unión
+  const anchoInput   = div.querySelector(".ancho-input");
+  const unionSelect  = div.querySelector(".union-select");
+  anchoInput.addEventListener("input", function() {
+    if (parseFloat(this.value) > 1.52) {
+      unionSelect.style.display = "block";
+    } else {
+      unionSelect.style.display = "none";
+      unionSelect.value = "";
+    }
+  });
+}
+
+      // --- FORMULARIO POR SECTOR ---
+      function addMedidaInSector(btn) {
+        const container = btn.parentElement.querySelector(".medidasContainerSector");
         const div = document.createElement("div");
         div.classList.add("dynamic-container");
         div.innerHTML = `
+          <label>Ancho (m):</label>
+          <input type="number" step="0.01" name="sector_medida_ancho[]" placeholder="Ancho" class="ancho-input" required>
+          <label>Alto (m):</label>
+          <input type="number" step="0.01" name="sector_medida_alto[]" placeholder="Alto" required>
           <label>Cantidad:</label>
-          <input type="number" name="medida_cantidad[]" placeholder="Cantidad">
-          <label>Alto (cm):</label>
-          <input type="number" step="0.01" name="medida_alto[]" placeholder="Alto">
-          <label>Ancho (cm):</label>
-          <input type="number" step="0.01" name="medida_ancho[]" placeholder="Ancho">
-          
+          <input type="number" name="sector_medida_cantidad[]" placeholder="Cantidad" required>
           <label>Despolarizado:</label>
-          <select name="medida_despolarizado[]">
+          <select name="sector_medida_despolarizado[]">
             <option value="true">Sí</option>
             <option value="false">No</option>
           </select>
+
+          <!-- NUEVO: Requiere Unión (oculto por defecto) -->
+          <label>Requiere Unión:</label>
+          <select name="sector_medida_union[]" class="union-select" style="display:none;">
+            <option value="">Seleccione</option>
+            <option value="izquierda">Izquierda</option>
+            <option value="derecha">Derecha</option>
+            <option value="arriba">Arriba</option>
+            <option value="abajo">Abajo</option>
+            <option value="medio">Medio</option>
+          </select>
+
           <button type="button" class="small-btn" onclick="this.parentElement.remove()">Eliminar Medida</button>
         `;
         container.appendChild(div);
+
+        // Lógica de show/hide para el select de unión
+        const anchoInput  = div.querySelector(".ancho-input");
+        const unionSelect = div.querySelector(".union-select");
+        anchoInput.addEventListener("input", function() {
+          if (parseFloat(this.value) > 1.52) {
+            unionSelect.style.display = "block";
+          } else {
+            unionSelect.style.display = "none";
+            unionSelect.value = "";
+          }
+        });
       }
+
       
       function buildMeasureTable(measures) {
         let tableHtml = `<table class="measure-table">
@@ -1150,26 +1236,50 @@
         container.appendChild(div);
       }
       
+      // --- FORMULARIO POR SECTOR ---
       function addMedidaInSector(btn) {
         const container = btn.parentElement.querySelector(".medidasContainerSector");
         const div = document.createElement("div");
         div.classList.add("dynamic-container");
         div.innerHTML = `
+          <label>Ancho (m):</label>
+          <input type="number" step="0.01" name="sector_medida_ancho[]" placeholder="Ancho" class="ancho-input" required>
+          <label>Alto (m):</label>
+          <input type="number" step="0.01" name="sector_medida_alto[]" placeholder="Alto" required>
           <label>Cantidad:</label>
-          <input type="number" name="sector_medida_cantidad[]" placeholder="Cantidad">
-          <label>Alto (cm):</label>
-          <input type="number" step="0.01" name="sector_medida_alto[]" placeholder="Alto">
-          <label>Ancho (cm):</label>
-          <input type="number" step="0.01" name="sector_medida_ancho[]" placeholder="Ancho">
-                    
+          <input type="number" name="sector_medida_cantidad[]" placeholder="Cantidad" required>
           <label>Despolarizado:</label>
           <select name="sector_medida_despolarizado[]">
             <option value="true">Sí</option>
             <option value="false">No</option>
           </select>
+
+          <!-- NUEVO: Requiere Unión (oculto por defecto) -->
+          <label>Requiere Unión:</label>
+          <select name="sector_medida_union[]" class="union-select" style="display:none;">
+            <option value="">Seleccione</option>
+            <option value="izquierda">Izquierda</option>
+            <option value="derecha">Derecha</option>
+            <option value="arriba">Arriba</option>
+            <option value="abajo">Abajo</option>
+            <option value="medio">Medio</option>
+          </select>
+
           <button type="button" class="small-btn" onclick="this.parentElement.remove()">Eliminar Medida</button>
         `;
         container.appendChild(div);
+
+        // Lógica de show/hide para el select de unión
+        const anchoInput  = div.querySelector(".ancho-input");
+        const unionSelect = div.querySelector(".union-select");
+        anchoInput.addEventListener("input", function() {
+          if (parseFloat(this.value) > 1.52) {
+            unionSelect.style.display = "block";
+          } else {
+            unionSelect.style.display = "none";
+            unionSelect.value = "";
+          }
+        });
       }
       
       function buildSectorMeasureTable(measures) {
